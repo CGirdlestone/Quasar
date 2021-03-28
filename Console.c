@@ -42,8 +42,55 @@ static void createRenderer(Console* console)
 		fprintf(stderr, "Failed to create SDL Renderer.");
 		exit(1);
 	}
+
+	SDL_SetRenderDrawColor(console->renderer, console->background.r, console->background.g, console->background.b, 0xFF);
+}
+
+static void loadFont(Console* console, const char* path)
+{
+	SDL_Surface* surf = IMG_Load(path);
+
+	if (surf == NULL) {
+		fprintf(stderr, "Couldn't load font.");
+		exit(1);
+	}
+
+	uint32_t* pixels = (uint32_t*)surf->pixels;
+	SDL_SetColorKey(surf, SDL_TRUE, pixels[0]);
+
+	console->font = SDL_CreateTextureFromSurface(console->renderer, surf);
+
+	if (console->font == NULL) {
+		fprintf(stderr, "Couldn't load font.");
+		exit(1);
+	}
+
+	SDL_FreeSurface(surf);
+}
+
+Console* createConsole(int width, int height, const char* title, const char* _path)
+{
+	Console* console = (Console*)malloc(sizeof(Console));
+
+	if (console == NULL) {
+		fprintf(stderr, "Cannot allocate enough memory for program.");
+		exit(1);
+	}
+
+	initConsole(console);
+	const char* config = "config.lua";
+	char* path = malloc(sizeof(char) * (strlen(_path) + strlen(config) + 1));
+	if (path == NULL) {
+		fprintf(stderr, "Cannot allocate enough memory to program");
+		exit(1);
+	}
+	memcpy(path, _path, strlen(_path));
+	memcpy(path + strlen(_path), config, strlen(config));
+	path[strlen(_path) + strlen(config)] = '\0';
+
 	lua_State* vm = luaL_newstate();
-	luaL_dofile(vm, "config.lua");
+	luaL_dofile(vm, path);
+	printf("%s\n", path);
 
 	lua_getglobal(vm, "background_colour");
 
@@ -85,58 +132,17 @@ static void createRenderer(Console* console)
 	console->font_colour.b = blue;
 	lua_pop(vm, 1);
 
-	lua_close(vm);
-
-	SDL_SetRenderDrawColor(console->renderer, red, green, blue, 0xFF);
-}
-
-static void loadFont(Console* console, const char* path)
-{
-	SDL_Surface* surf = IMG_Load(path);
-
-	if (surf == NULL) {
-		fprintf(stderr, "Couldn't load font.");
-		exit(1);
-	}
-
-	uint32_t* pixels = (uint32_t*)surf->pixels;
-	SDL_SetColorKey(surf, SDL_TRUE, pixels[0]);
-
-	console->font = SDL_CreateTextureFromSurface(console->renderer, surf);
-
-	if (console->font == NULL) {
-		fprintf(stderr, "Couldn't load font.");
-		exit(1);
-	}
-
-	SDL_FreeSurface(surf);
-}
-
-Console* createConsole(int width, int height, const char* title)
-{
-	Console* console = (Console*)malloc(sizeof(Console));
-
-	if (console == NULL) {
-		fprintf(stderr, "Cannot allocate enough memory for program.");
-		exit(1);
-	}
-
-	initConsole(console);
-
-	lua_State* vm = luaL_newstate();
-	luaL_dofile(vm, "config.lua");
 	lua_getglobal(vm, "font");
 	const char* filepath = lua_tostring(vm, -1);
-	const char* directory = "C:\\Users\\craig\\Documents\\TextEditor\\";
-	char* absolute = malloc(sizeof(char) * (strlen(filepath) + strlen(directory) + 1));
+	char* absolute = malloc(sizeof(char) * (strlen(filepath) + strlen(path) + 1));
 	if (absolute == NULL) {
 		lua_close(vm);
 		fprintf(stderr, "Failed to allocate memory to program.");
 		exit(1);
 	}
-	memcpy(absolute, directory, strlen(directory));
-	memcpy(absolute + strlen(directory), filepath, strlen(filepath));
-	absolute[strlen(filepath) + strlen(directory)] = '\0';
+	memcpy(absolute, _path, strlen(path));
+	memcpy(absolute + strlen(_path), filepath, strlen(filepath));
+	absolute[strlen(filepath) + strlen(_path)] = '\0';
 	
 	lua_getglobal(vm, "font_width");
 	int font_width = lua_tointeger(vm, -1);
@@ -154,6 +160,9 @@ Console* createConsole(int width, int height, const char* title)
 	createRenderer(console);
 
 	loadFont(console, absolute);
+
+	free(path);
+	free(absolute);
 
 	return console;
 }
@@ -179,16 +188,16 @@ void freeConsole(Console* console)
 void putChar(Console* console, char c, int x, int y)
 {
 	SDL_Rect dstrect;
-	dstrect.x = x * TILE_SIZE_WIDTH;
-	dstrect.y = y * TILE_SIZE_HEIGHT;
-	dstrect.w = TILE_SIZE_WIDTH;
-	dstrect.h = TILE_SIZE_HEIGHT;
+	dstrect.x = x * console->font_width;
+	dstrect.y = y * console->font_height;
+	dstrect.w = console->font_width;
+	dstrect.h = console->font_height;
 
 	SDL_Rect srcrect;
-	srcrect.x = (int)c % TILE_SET_WIDTH * TILE_SIZE_WIDTH;
-	srcrect.y = (int)c / TILE_SET_HEIGHT * TILE_SIZE_HEIGHT;
-	srcrect.w = TILE_SIZE_WIDTH;
-	srcrect.h = TILE_SIZE_HEIGHT;
+	srcrect.x = (int)c % 16 * console->font_width;
+	srcrect.y = (int)c / 16 * console->font_height;
+	srcrect.w = console->font_width;
+	srcrect.h = console->font_height;
 
 	SDL_SetTextureColorMod(console->font, console->font_colour.r, console->font_colour.g, console->font_colour.b);
 	SDL_RenderCopy(console->renderer, console->font, &srcrect, &dstrect);

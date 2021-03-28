@@ -1,5 +1,6 @@
 
 #pragma warning(disable:4996)
+#include <string.h>
 #include "Common.h"
 #include "Console.h"
 #include "Line.h"
@@ -10,17 +11,29 @@
 
 int main(int argc, char* argv[])
 {
+	const char* path = "C:\\Users\\craig\\Documents\\TextEditor\\";
+
 	initSDL();
 	
+	const char* config = "config.lua";
+	char* lua_path = malloc(sizeof(char) * (strlen(path) + strlen(config) + 1));
+	if (lua_path == NULL) {
+		fprintf(stderr, "Cannot allocate enough memory to program");
+		exit(1);
+	}
+	memcpy(lua_path, path, strlen(path));
+	memcpy(lua_path + strlen(path), config, strlen(config));
+	lua_path[strlen(path) + strlen(config)] = '\0';
+
 	lua_State* vm = luaL_newstate();
-	luaL_dofile(vm, "config.lua");
+	luaL_dofile(vm, lua_path);
 	lua_getglobal(vm, "window_width");
 	int width = lua_tointeger(vm, -1);
 	lua_getglobal(vm, "window_height");
 	int height = lua_tointeger(vm, -1);
 	lua_close(vm);
 
-	Console* console = createConsole(width, height, "Text Editor");
+	Console* console = createConsole(width, height, "Text Editor", path);
 	
 	Editor editor;
 	initEditor(&editor, argv[1]);

@@ -23,7 +23,7 @@ static void createWindow(Console* console);
 static void createRenderer(Console* console);
 static void loadFont(Console* console, const char* path);
 
-Console* createConsole(int width, int height, const char* title);
+Console* createConsole(int width, int height, const char* title, const char* _path);
 void clearConsole(Console* console);
 void updateConsole(Console* console);
 void freeConsole(Console* console);
