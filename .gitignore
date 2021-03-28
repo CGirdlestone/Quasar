@@ -1,0 +1,10 @@
+*.png
+*.sln
+*.dll
+*.vcxproj
+*.user
+*.filters
+*.txt
+Lua542/
+.vs/
+x64/
