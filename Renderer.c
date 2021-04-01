@@ -28,6 +28,7 @@ static void drawTextInputMode(Console* console, Editor* editor, Line* line)
 	SDL_Color numberColour = { 0xb0, 0xc4, 0xde };
 	SDL_Color keywordColour = { 0xcd, 0x5c, 0x5c };
 	SDL_Color stringColour = { 0x99, 0x66, 0x00 };
+	SDL_Color commentColour = { 0x55, 0x44, 0x44 };
 
 	do {
 		drawLineNumber(console, editor, j);
@@ -43,6 +44,7 @@ static void drawTextInputMode(Console* console, Editor* editor, Line* line)
 			bool isDigit = false;
 			bool isKeyword = false;
 			bool isString = false;
+			bool isComment = false;
 
 			if (c >= '0' && c <= '9') {
 				number(line->buffer, &k);
@@ -55,8 +57,12 @@ static void drawTextInputMode(Console* console, Editor* editor, Line* line)
 				string(line->buffer, &k);
 				isString = true;
 			}
+			else if (c == '#') {
+				comment(line->buffer, &k);
+				isComment = true;
+			}
 
-			if (i < k && (isDigit || isKeyword || isString)) {
+			if (i < k && (isDigit || isKeyword || isString || isComment)) {
 				while (i < k) {
 					if (isDigit) {
 						putColourChar(console, line->buffer[i], (i - editor->frame_x) + editor->x_offset, j + editor->y_offset, numberColour);
@@ -66,6 +72,9 @@ static void drawTextInputMode(Console* console, Editor* editor, Line* line)
 					}
 					else if (isString) {
 						putColourChar(console, line->buffer[i], (i - editor->frame_x) + editor->x_offset, j + editor->y_offset, stringColour);
+					}
+					else if (isComment) {
+						putColourChar(console, line->buffer[i], (i - editor->frame_x) + editor->x_offset, j + editor->y_offset, commentColour);
 					}
 					i++;
 				}
@@ -166,4 +175,11 @@ void string(char* buffer, int* k)
 		(*k)++;
 	}
 	(*k)++; // skip past the closing quote 
+}
+
+void comment(char* buffer, int* k)
+{
+	while (buffer[*k] != '\n') {
+		(*k)++;
+	}
 }

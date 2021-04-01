@@ -16,5 +16,6 @@ static bool checkKeyword(char* buffer, int i, int k);
 static void number(char* buffer, int* k);
 static void identifier(char* buffer, int* k);
 static void string(char* buffer, int* k);
+static void comment(char* buffer, int* k);
 
 #endif
