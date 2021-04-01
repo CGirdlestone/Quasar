@@ -170,25 +170,121 @@ bool checkKeywordC(char* buffer, int i, int k)
 {
 	char c = buffer[i];
 	switch (c) {
-	case 'a': return memcmp(&buffer[i], "and", ((size_t)k - (size_t)i)) == 0 && ((size_t)k - (size_t)i) == strlen("and");
+	case 'a': return memcmp(&buffer[i], "auto", ((size_t)k - (size_t)i)) == 0 && ((size_t)k - (size_t)i) == strlen("auto");
 	case 'b': return memcmp(&buffer[i], "break", ((size_t)k - (size_t)i)) == 0 && ((size_t)k - (size_t)i) == strlen("break");
-	case 'c': return memcmp(&buffer[i], "continue", ((size_t)k - (size_t)i)) == 0 && ((size_t)k - (size_t)i) == strlen("continue");
-	case 'e': return memcmp(&buffer[i], "else", ((size_t)k - (size_t)i)) == 0 && ((size_t)k - (size_t)i) == strlen("else");
+	case 'c': 
+		switch (buffer[i + 1]) {
+		case 'a': return memcmp(&buffer[i], "case", ((size_t)k - (size_t)i)) == 0 && ((size_t)k - (size_t)i) == strlen("case");
+		case 'h': return memcmp(&buffer[i], "char", ((size_t)k - (size_t)i)) == 0 && ((size_t)k - (size_t)i) == strlen("char");
+		case 'o': 
+			switch (buffer[i + 2]) {
+			case 'n': 
+				switch (buffer[i + 3]) {
+				case 't': return memcmp(&buffer[i], "continue", ((size_t)k - (size_t)i)) == 0 && ((size_t)k - (size_t)i) == strlen("continue");
+				case 's': return memcmp(&buffer[i], "const", ((size_t)k - (size_t)i)) == 0 && ((size_t)k - (size_t)i) == strlen("const");
+				default: return false;
+				}
+				break;
+			default: return false;
+			}
+			break;
+		default: return false;
+		}
+		break;
+	case 'd': 
+		switch (buffer[i + 1]) {
+		case 'o': 
+			if (k - i == 2) {
+				return true;
+			}
+
+			switch (buffer[i + 2]) {
+			case 'u': return memcmp(&buffer[i], "double", ((size_t)k - (size_t)i)) == 0 && ((size_t)k - (size_t)i) == strlen("double");
+			default: return false;
+			}
+			break;
+		case 'e': return memcmp(&buffer[i], "default", ((size_t)k - (size_t)i)) == 0 && ((size_t)k - (size_t)i) == strlen("default");
+		default: return false;
+		}
+		break;
+	case 'e': 
+		switch (buffer[i + 1]) {
+		case 'l': return memcmp(&buffer[i], "else", ((size_t)k - (size_t)i)) == 0 && ((size_t)k - (size_t)i) == strlen("else");
+		case 'n': return memcmp(&buffer[i], "enum", ((size_t)k - (size_t)i)) == 0 && ((size_t)k - (size_t)i) == strlen("enum");
+		case 'x': return memcmp(&buffer[i], "extern", ((size_t)k - (size_t)i)) == 0 && ((size_t)k - (size_t)i) == strlen("extern");
+		}
 	case 'f':
 		switch (buffer[i + 1]) {
-		case 'u': return memcmp(&buffer[i], "func", ((size_t)k - (size_t)i)) == 0 && ((size_t)k - (size_t)i) == strlen("func");
+		case 'l': return memcmp(&buffer[i], "float", ((size_t)k - (size_t)i)) == 0 && ((size_t)k - (size_t)i) == strlen("float");
 		case 'o': return memcmp(&buffer[i], "for", ((size_t)k - (size_t)i)) == 0 && ((size_t)k - (size_t)i) == strlen("for");
 		default: return false;
 		}
 		break;
-	case 'i': return memcmp(&buffer[i], "if", ((size_t)k - (size_t)i)) == 0 && ((size_t)k - (size_t)i) == strlen("if");
-	case 'l': return memcmp(&buffer[i], "let", ((size_t)k - (size_t)i)) == 0 && ((size_t)k - (size_t)i) == strlen("let");
-	case 'o': return memcmp(&buffer[i], "or", ((size_t)k - (size_t)i)) == 0 && ((size_t)k - (size_t)i) == strlen("or");
-	case 'r': return memcmp(&buffer[i], "return", ((size_t)k - (size_t)i)) == 0 && ((size_t)k - (size_t)i) == strlen("return");
-	case 't':
+	case 'g': return memcmp(&buffer[i], "goto", ((size_t)k - (size_t)i)) == 0 && ((size_t)k - (size_t)i) == strlen("goto");
+	case 'i': 
 		switch (buffer[i + 1]) {
-		case 'r': return memcmp(&buffer[i], "true", ((size_t)k - (size_t)i)) == 0 && ((size_t)k - (size_t)i) == strlen("true");
-		case 'h': return memcmp(&buffer[i], "then", ((size_t)k - (size_t)i)) == 0 && ((size_t)k - (size_t)i) == strlen("then");
+		case 'f': return memcmp(&buffer[i], "if", ((size_t)k - (size_t)i)) == 0 && ((size_t)k - (size_t)i) == strlen("if");
+		case 'n': return memcmp(&buffer[i], "int", ((size_t)k - (size_t)i)) == 0 && ((size_t)k - (size_t)i) == strlen("int");
+		default: return false;
+		}
+		break;
+	case 'l': return memcmp(&buffer[i], "long", ((size_t)k - (size_t)i)) == 0 && ((size_t)k - (size_t)i) == strlen("long");
+	case 'o': return memcmp(&buffer[i], "or", ((size_t)k - (size_t)i)) == 0 && ((size_t)k - (size_t)i) == strlen("or");
+	case 'r': 
+		switch (buffer[i + 1]) {
+		case 'e':
+			switch (buffer[i + 2]) {
+			case 't': return memcmp(&buffer[i], "return", ((size_t)k - (size_t)i)) == 0 && ((size_t)k - (size_t)i) == strlen("return");
+			case 'g': return memcmp(&buffer[i], "register", ((size_t)k - (size_t)i)) == 0 && ((size_t)k - (size_t)i) == strlen("register");
+			default: return false;
+			}
+			break;
+		default: return false;
+		}
+		break;
+	case 's':
+		switch (buffer[i + 1]) {
+		case 'h': return memcmp(&buffer[i], "short", ((size_t)k - (size_t)i)) == 0 && ((size_t)k - (size_t)i) == strlen("short");
+		case 'w': return memcmp(&buffer[i], "switch", ((size_t)k - (size_t)i)) == 0 && ((size_t)k - (size_t)i) == strlen("switch");
+		case 'i':
+			switch (buffer[i + 2]) {
+			case 'g': return memcmp(&buffer[i], "signed", ((size_t)k - (size_t)i)) == 0 && ((size_t)k - (size_t)i) == strlen("signed");
+			case 'z': return memcmp(&buffer[i], "sizeof", ((size_t)k - (size_t)i)) == 0 && ((size_t)k - (size_t)i) == strlen("sizeof");
+			default: return false;
+			}
+			break;
+		case 't':
+			switch (buffer[i + 2]) {
+			case 'a': return memcmp(&buffer[i], "static", ((size_t)k - (size_t)i)) == 0 && ((size_t)k - (size_t)i) == strlen("static");
+			case 't': return memcmp(&buffer[i], "struct", ((size_t)k - (size_t)i)) == 0 && ((size_t)k - (size_t)i) == strlen("struct");
+			default: return false;
+			}
+			break;
+		default: return false;
+		}
+		break;
+	case 't': return memcmp(&buffer[i], "typedef", ((size_t)k - (size_t)i)) == 0 && ((size_t)k - (size_t)i) == strlen("typedef");
+	case 'u': 
+		switch (buffer[i + 1]) {
+		case 'n': 
+			switch (buffer[i + 2]) {
+			case 'i': return memcmp(&buffer[i], "union", ((size_t)k - (size_t)i)) == 0 && ((size_t)k - (size_t)i) == strlen("union");
+			case 's': return memcmp(&buffer[i], "unsigned", ((size_t)k - (size_t)i)) == 0 && ((size_t)k - (size_t)i) == strlen("unsigned");
+			default: return false;
+			}
+			break;
+		default: return false;
+		}
+		break;
+	case 'v': 
+		switch (buffer[i + 1]) {
+		case 'o':
+			switch (buffer[i + 2]) {
+			case 'i': return memcmp(&buffer[i], "void", ((size_t)k - (size_t)i)) == 0 && ((size_t)k - (size_t)i) == strlen("void");
+			case 'l': return memcmp(&buffer[i], "volatile", ((size_t)k - (size_t)i)) == 0 && ((size_t)k - (size_t)i) == strlen("volatile");
+			default: return false;
+			}
+			break;
 		default: return false;
 		}
 		break;
