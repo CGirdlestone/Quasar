@@ -7,7 +7,7 @@
 
 void handleInput(Console* console, Editor* editor, Line* line, SDL_Event* event);
 static void commandModeInput(Console* console,Editor* editor, Line* line, SDL_Event* event);
-static void commandTextInput(Editor* editor, Line* line, SDL_Event* event);
+static void commandTextInput(Console* console, Editor* editor, Line* line, SDL_Event* event);
 static void textInputMode(Console* console, Editor* editor, Line* line, SDL_Event* event);
 static void moveUp(Console* console, Editor* editor, Line* line);
 static void moveDown(Console* console, Editor* editor, Line* line);

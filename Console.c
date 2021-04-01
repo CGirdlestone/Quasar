@@ -90,7 +90,6 @@ Console* createConsole(int width, int height, const char* title, const char* _pa
 
 	lua_State* vm = luaL_newstate();
 	luaL_dofile(vm, path);
-	printf("%s\n", path);
 
 	lua_getglobal(vm, "background_colour");
 

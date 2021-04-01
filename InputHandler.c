@@ -107,7 +107,7 @@ void handleInput(Console* console, Editor* editor, Line* line, SDL_Event* e)
 		commandModeInput(console, editor, line, e);
 	}
 	else if (editor->command_mode == COMMAND_INPUT) {
-		commandTextInput(editor, line, e);
+		commandTextInput(console, editor, line, e);
 	}
 	else if (editor->command_mode == TEXT_MODE) {
 		textInputMode(console, editor, line, e);
@@ -149,7 +149,7 @@ static void commandModeInput(Console* console, Editor* editor, Line* line, SDL_E
 	updateFramePosition(console, editor);
 }
 
-static void commandTextInput(Editor* editor, Line* line, SDL_Event* e)
+static void commandTextInput(Console* console, Editor* editor, Line* line, SDL_Event* e)
 {
 	while (SDL_PollEvent(e)) {
 		if (e->type == SDL_QUIT) {

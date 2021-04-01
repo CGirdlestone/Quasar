@@ -37,6 +37,23 @@ int main(int argc, char* argv[])
 	
 	Editor editor;
 	initEditor(&editor, argv[1]);
+
+	int k = strlen(argv[1]) - 1;
+	size_t size = 1;
+	while (argv[1][k - 1] != '.') {
+		k--;
+		size++;
+	}
+
+	char* extension = malloc(sizeof(char) * (size + 1));
+	if (extension == NULL) {
+		fprintf(stderr, "Could not allocate enough memory to program.\n");
+		exit(1);
+	}
+	memcpy(extension, argv[1] + k, size);
+	extension[size] = '\0';
+	setLanguage(&editor, extension);
+	free(extension);
 	
 	Line* head = NULL;
 	FILE* file = NULL;

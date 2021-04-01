@@ -9,6 +9,15 @@ typedef enum {
 	TEXT_MODE,
 } EditorState;
 
+typedef enum {
+	L_NONE,
+	L_C,
+	L_CPP,
+	L_RUST,
+	L_PY,
+	L_PO,
+} Language;
+
 typedef struct {
 	int x;
 	int y;
@@ -23,8 +32,10 @@ typedef struct {
 	const char* command[MAX_COMMAND_CHARS];
 	int num_command_chars;
 	const char* filename;
+	Language lang;
 } Editor;
 
 void initEditor(Editor* editor, const char* filename);
+void setLanguage(Editor* editor, const char* language);
 
 #endif
