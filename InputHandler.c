@@ -93,6 +93,14 @@ void moveFrameLeft(Console* console, Editor* editor)
 	}
 }
 
+void updateFramePosition(Console* console, Editor* editor)
+{
+	moveFrameUp(console, editor);
+	moveFrameDown(console, editor);
+	moveFrameLeft(console, editor);
+	moveFrameRight(console, editor);
+}
+
 void handleInput(Console* console, Editor* editor, Line* line, SDL_Event* e)
 {
 	if (editor->command_mode == COMMAND_MODE) {
@@ -122,7 +130,7 @@ static void commandModeInput(Console* console, Editor* editor, Line* line, SDL_E
 			}
 			switch (e->key.keysym.sym){
 			case SDLK_i: editor->command_mode = TEXT_MODE; break;
-			case SDLK_o: insertLine(line); editor->y++; editor->command_mode = TEXT_MODE; break;
+			case SDLK_o: insertLine(line); moveDown(console, editor, line); editor->command_mode = TEXT_MODE; break;
 			case SDLK_UP: moveUp(console, editor, line); break;
 			case SDLK_DOWN: moveDown(console, editor, line); break;
 			case SDLK_LEFT: moveLeft(console, editor, line); break;
@@ -138,10 +146,7 @@ static void commandModeInput(Console* console, Editor* editor, Line* line, SDL_E
 			}
 		}
 	}
-	moveFrameUp(console, editor);
-	moveFrameDown(console, editor);
-	moveFrameLeft(console, editor);
-	moveFrameRight(console, editor);
+	updateFramePosition(console, editor);
 }
 
 static void commandTextInput(Editor* editor, Line* line, SDL_Event* e)
@@ -254,9 +259,7 @@ static void textInputMode(Console* console, Editor* editor, Line* line, SDL_Even
 				editor->x++; 
 				editor->x = editor->x < line->num_chars ? editor->x : line->num_chars; 
 				break;
-			case SDLK_RETURN: 
-				addChar(editor, line, '\n', editor->x); 
-				break;
+			case SDLK_RETURN: addChar(editor, line, '\n', editor->x); break;
 			case SDLK_LSHIFT: editor->shift_key = true; break;
 			case SDLK_RSHIFT: editor->shift_key = true; break;
 			case SDLK_LCTRL: editor->ctrl_key = true; break;
@@ -280,10 +283,7 @@ static void textInputMode(Console* console, Editor* editor, Line* line, SDL_Even
 		}
 	}
 
-	moveFrameUp(console, editor);
-	moveFrameDown(console, editor);
-	moveFrameLeft(console, editor);
-	moveFrameRight(console, editor);
+	updateFramePosition(console, editor);
 }
 
 void addCharCommand(Editor* editor, char c) {
@@ -309,28 +309,29 @@ void executeCommand(Editor* editor, Line* line)
 		line = head;
 	} 
 
-	if (editor->command[1] == 'q' && editor->command[2] == '\0') {
-		editor->running = false;
-	}
-	else if (editor->command[1] == 'w' && (editor->command[2] == '\0' || editor->command[2] == 'q')) {
-		FILE* file = NULL;
+	int i = 1;
+	while (editor->command[i] != '\0') {
+		char c = editor->command[i];
+		switch (c) {
+		case 'q': editor->running = false; resetCommand(editor); return;
+		case 'w': {
+				FILE* file = NULL;
 
-		if (fopen_s(&file, editor->filename, "w") != 0) {
-			fprintf(stderr, "Failed to open file.");
-			exit(1);
-		}
+				if (fopen_s(&file, editor->filename, "w") != 0) {
+					fprintf(stderr, "Failed to open file.");
+					exit(1);
+				}
 
-		save(head, file);
-
-		fclose(file);
-
-		if (editor->command[2] == 'q') {
-			editor->running = false;
+				save(head, file);
+					
+				fclose(file);
+			}
+			i++;
+			break; 
 		}
 	}
 
 	resetCommand(editor);
-
 }
 
 static int seekPreviousSpace(Editor* editor, Line* line)

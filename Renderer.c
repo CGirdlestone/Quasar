@@ -34,34 +34,26 @@ static void drawTextInputMode(Console* console, Editor* editor, Line* line)
 
 		for (int i = editor->frame_x; ; ) {
 			int k = i;
-
 			char c = line->buffer[i];
+			
+			if (c == '\n' || c == '\0') {
+				break;
+			}
+			
 			bool isDigit = false;
 			bool isKeyword = false;
 			bool isString = false;
 
-			if (c == '\n' || c == '\0') {
-				break;
-			}
-
 			if (c >= '0' && c <= '9') {
+				number(line->buffer, &k);
 				isDigit = true;
-				while (line->buffer[k] >= '0' && line->buffer[k] <= '9') {
-					k++;
-				}
 			} else  if (c >= 'a' && c <= 'z') {
-				while (line->buffer[k] >= 'a' && line->buffer[k] <= 'z') {
-					k++;
-				}
+				identifier(line->buffer, &k);
 				isKeyword = checkKeyword(line->buffer, i, k);
 			}
 			else if (c == '"') {
+				string(line->buffer, &k);
 				isString = true;
-				k++; // skip over the opening quote
-				while (line->buffer[k] != '"') {
-					k++;
-				}
-				k++; // skip past the closing quote 
 			}
 
 			if (i < k && (isDigit || isKeyword || isString)) {
@@ -91,7 +83,6 @@ static void drawTextInputMode(Console* console, Editor* editor, Line* line)
 					i++;
 				}
 			}
-
 		}
 
 		line = line->tail;
@@ -152,4 +143,27 @@ bool checkKeyword(char* buffer, int i, int k)
 	case 'w': return memcmp(&buffer[i], "while", ((size_t)k - (size_t)i)) == 0 && ((size_t)k - (size_t)i) == strlen("while");
 	default: return false;
 	}
+}
+
+void number(char* buffer, int* k)
+{
+	while (buffer[*k] >= '0' && buffer[*k] <= '9') {
+		(*k)++;
+	}
+}
+
+void identifier(char* buffer, int* k)
+{
+	while (buffer[*k] >= 'a' && buffer[*k] <= 'z') {
+		(*k)++;
+	}
+}
+
+void string(char* buffer, int* k)
+{
+	(*k)++; // skip over the opening quote
+	while (buffer[*k] != '"') {
+		(*k)++;
+	}
+	(*k)++; // skip past the closing quote 
 }
