@@ -203,3 +203,22 @@ void putChar(Console* console, char c, int x, int y)
 	SDL_RenderCopy(console->renderer, console->font, &srcrect, &dstrect);
 	SDL_SetRenderDrawColor(console->renderer, console->background.r, console->background.g, console->background.b, SDL_ALPHA_OPAQUE);
 }
+
+void putColourChar(Console* console, char c, int x, int y, SDL_Color colour)
+{
+	SDL_Rect dstrect;
+	dstrect.x = x * console->font_width;
+	dstrect.y = y * console->font_height;
+	dstrect.w = console->font_width;
+	dstrect.h = console->font_height;
+
+	SDL_Rect srcrect;
+	srcrect.x = (int)c % 16 * console->font_width;
+	srcrect.y = (int)c / 16 * console->font_height;
+	srcrect.w = console->font_width;
+	srcrect.h = console->font_height;
+
+	SDL_SetTextureColorMod(console->font, colour.r, colour.g, colour.b);
+	SDL_RenderCopy(console->renderer, console->font, &srcrect, &dstrect);
+	SDL_SetRenderDrawColor(console->renderer, console->background.r, console->background.g, console->background.b, SDL_ALPHA_OPAQUE);
+}

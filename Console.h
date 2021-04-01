@@ -29,6 +29,7 @@ void updateConsole(Console* console);
 void freeConsole(Console* console);
 
 void putChar(Console* console, char c, int x, int y);
+void putColourChar(Console* console, char c, int x, int y, SDL_Color colour);
 
 
 #endif 

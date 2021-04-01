@@ -5,10 +5,10 @@ void save(Line* head, FILE* file)
 {
 	do {
 		int i = 0;
-		do {
+		while (head->buffer[i] != '\0') {
 			char c = head->buffer[i++];
 			fputc(c, file);
-		} while (i < head->num_chars);
+		}
 		head = head->tail;
 	} while (head != NULL);
 }
@@ -36,6 +36,9 @@ Line* load(FILE* file)
 				}
 
 				return head;
+			}
+			else if (c == '\r') {
+				continue;
 			}
 
 			head->buffer[head->num_chars++] = c;

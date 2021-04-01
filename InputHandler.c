@@ -22,6 +22,14 @@ static void moveDown(Console* console, Editor* editor, Line* line)
 	editor->y++;
 
 	editor->x = editor->x > line->tail->num_chars ? line->tail->num_chars - 1 : editor->x;
+
+	if (editor->x < 0) {
+		editor->x = 0;
+	}
+
+	if (line->tail->num_chars < console->width / console->font_width) {
+		editor->frame_x = 0;
+	}
 }
 
 static void moveLeft(Console* console, Editor* editor, Line* line)
@@ -68,6 +76,20 @@ void moveFrameDown(Console* console, Editor* editor)
 {
 	if ((editor->y - editor->frame_y) == (console->height / console->font_height - editor->y_offset)) {
 		editor->frame_y++;
+	}
+}
+
+void moveFrameRight(Console* console, Editor* editor)
+{
+	if ((editor->x - editor->frame_x) >= (console->width / console->font_width - editor->x_offset)) {
+		editor->frame_x++;
+	}
+}
+
+void moveFrameLeft(Console* console, Editor* editor) 
+{
+	if (editor->x < editor->frame_x && editor->frame_x > 0) {
+		editor->frame_x--;
 	}
 }
 
@@ -118,6 +140,8 @@ static void commandModeInput(Console* console, Editor* editor, Line* line, SDL_E
 	}
 	moveFrameUp(console, editor);
 	moveFrameDown(console, editor);
+	moveFrameLeft(console, editor);
+	moveFrameRight(console, editor);
 }
 
 static void commandTextInput(Editor* editor, Line* line, SDL_Event* e)
@@ -258,6 +282,8 @@ static void textInputMode(Console* console, Editor* editor, Line* line, SDL_Even
 
 	moveFrameUp(console, editor);
 	moveFrameDown(console, editor);
+	moveFrameLeft(console, editor);
+	moveFrameRight(console, editor);
 }
 
 void addCharCommand(Editor* editor, char c) {

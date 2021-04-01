@@ -15,6 +15,8 @@ static void moveLeft(Console* console, Editor* editor, Line* line);
 static void moveRight(Console* console, Editor* editor, Line* line);
 static void moveFrameUp(Console* console, Editor* editor);
 static void moveFrameDown(Console* console, Editor* editor);
+static void moveFrameRight(Console* console, Editor* editor);
+static void moveFrameLeft(Console* console, Editor* editor);
 
 void executeCommand(Editor* editor, Line* line);
 void resetCommand(Editor* editor);
