@@ -147,6 +147,8 @@ Console* createConsole(int width, int height, const char* title, const char* _pa
 	int font_width = lua_tointeger(vm, -1);
 	lua_getglobal(vm, "font_height");
 	int font_height = lua_tointeger(vm, -1);
+
+	loadSyntaxHighlightColours(console, vm);
 	lua_close(vm);
 
 	console->width = width * font_width;
@@ -164,6 +166,89 @@ Console* createConsole(int width, int height, const char* title, const char* _pa
 	free(absolute);
 
 	return console;
+}
+
+void loadSyntaxHighlightColours(Console* console, lua_State* vm)
+{
+	lua_getglobal(vm, "keyword_colour");
+
+	lua_pushstring(vm, "red");
+	lua_gettable(vm, -2);
+	int red = lua_tointeger(vm, -1);
+	console->keyword_colour.r = red;
+	lua_pop(vm, 1);
+
+	lua_pushstring(vm, "green");
+	lua_gettable(vm, -2);
+	int green = lua_tointeger(vm, -1);
+	console->keyword_colour.g = green;
+	lua_pop(vm, 1);
+
+	lua_pushstring(vm, "blue");
+	lua_gettable(vm, -2);
+	int blue = lua_tointeger(vm, -1);
+	console->keyword_colour.b = blue;
+	lua_pop(vm, 1);
+
+	lua_getglobal(vm, "number_colour");
+
+	lua_pushstring(vm, "red");
+	lua_gettable(vm, -2);
+	red = lua_tointeger(vm, -1);
+	console->number_colour.r = red;
+	lua_pop(vm, 1);
+
+	lua_pushstring(vm, "green");
+	lua_gettable(vm, -2);
+	green = lua_tointeger(vm, -1);
+	console->number_colour.g = green;
+	lua_pop(vm, 1);
+
+	lua_pushstring(vm, "blue");
+	lua_gettable(vm, -2);
+	blue = lua_tointeger(vm, -1);
+	console->number_colour.b = blue;
+	lua_pop(vm, 1);
+
+	lua_getglobal(vm, "string_colour");
+
+	lua_pushstring(vm, "red");
+	lua_gettable(vm, -2);
+	red = lua_tointeger(vm, -1);
+	console->string_colour.r = red;
+	lua_pop(vm, 1);
+
+	lua_pushstring(vm, "green");
+	lua_gettable(vm, -2);
+	green = lua_tointeger(vm, -1);
+	console->string_colour.g = green;
+	lua_pop(vm, 1);
+
+	lua_pushstring(vm, "blue");
+	lua_gettable(vm, -2);
+	blue = lua_tointeger(vm, -1);
+	console->string_colour.b = blue;
+	lua_pop(vm, 1);
+
+	lua_getglobal(vm, "comment_colour");
+
+	lua_pushstring(vm, "red");
+	lua_gettable(vm, -2);
+	red = lua_tointeger(vm, -1);
+	console->comment_colour.r = red;
+	lua_pop(vm, 1);
+
+	lua_pushstring(vm, "green");
+	lua_gettable(vm, -2);
+	green = lua_tointeger(vm, -1);
+	console->comment_colour.g = green;
+	lua_pop(vm, 1);
+
+	lua_pushstring(vm, "blue");
+	lua_gettable(vm, -2);
+	blue = lua_tointeger(vm, -1);
+	console->comment_colour.b = blue;
+	lua_pop(vm, 1);
 }
 
 void clearConsole(Console* console)
@@ -184,7 +269,7 @@ void freeConsole(Console* console)
 	free(console);
 }
 
-void putChar(Console* console, char c, int x, int y)
+void putChar(Console* console, unsigned char c, int x, int y)
 {
 	SDL_Rect dstrect;
 	dstrect.x = x * console->font_width;
@@ -203,7 +288,7 @@ void putChar(Console* console, char c, int x, int y)
 	SDL_SetRenderDrawColor(console->renderer, console->background.r, console->background.g, console->background.b, SDL_ALPHA_OPAQUE);
 }
 
-void putColourChar(Console* console, char c, int x, int y, SDL_Color colour)
+void putColourChar(Console* console, unsigned char c, int x, int y, SDL_Color colour)
 {
 	SDL_Rect dstrect;
 	dstrect.x = x * console->font_width;

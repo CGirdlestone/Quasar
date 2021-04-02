@@ -77,16 +77,16 @@ static void drawTextInputMode(Console* console, Editor* editor, Line* line)
 			if (i < k && (isDigit || isKeyword || isString || isComment)) {
 				while (i < k) {
 					if (isDigit) {
-						putColourChar(console, line->buffer[i], (i - editor->frame_x) + editor->x_offset, j + editor->y_offset, numberColour);
+						putColourChar(console, line->buffer[i], (i - editor->frame_x) + editor->x_offset, j + editor->y_offset, console->number_colour);
 					}
 					else if (isKeyword) {
-						putColourChar(console, line->buffer[i], (i - editor->frame_x) + editor->x_offset, j + editor->y_offset, keywordColour);
+						putColourChar(console, line->buffer[i], (i - editor->frame_x) + editor->x_offset, j + editor->y_offset, console->keyword_colour);
 					}
 					else if (isString) {
-						putColourChar(console, line->buffer[i], (i - editor->frame_x) + editor->x_offset, j + editor->y_offset, stringColour);
+						putColourChar(console, line->buffer[i], (i - editor->frame_x) + editor->x_offset, j + editor->y_offset, console->string_colour);
 					}
 					else if (isComment) {
-						putColourChar(console, line->buffer[i], (i - editor->frame_x) + editor->x_offset, j + editor->y_offset, commentColour);
+						putColourChar(console, line->buffer[i], (i - editor->frame_x) + editor->x_offset, j + editor->y_offset, console->comment_colour);
 					}
 					i++;
 				}
@@ -130,9 +130,11 @@ void drawLineNumber(Console* console, Editor* editor, int line_number)
 	char line_num[] = { '\0', '\0' , '\0' , '\0' , '\0' };
 	sprintf_s(line_num, 5, "%i", line_number + 1 + editor->frame_y);
 	for (int i = 0; i < 5; i++) {
+		if (line_num[i] == '\0') break;
 		putChar(console, line_num[i], i, line_number + editor->y_offset);
 	}
-	putChar(console, ' ', 5, line_number + editor->y_offset);
+	char vertical_bar = (unsigned char)(179);
+	putChar(console, vertical_bar, editor->x_offset - 1, line_number + editor->y_offset);
 }
 
 bool checkKeywordPolarite(char* buffer, int i, int k)
@@ -256,7 +258,7 @@ bool checkKeywordC(char* buffer, int i, int k)
 		case 't':
 			switch (buffer[i + 2]) {
 			case 'a': return memcmp(&buffer[i], "static", ((size_t)k - (size_t)i)) == 0 && ((size_t)k - (size_t)i) == strlen("static");
-			case 't': return memcmp(&buffer[i], "struct", ((size_t)k - (size_t)i)) == 0 && ((size_t)k - (size_t)i) == strlen("struct");
+			case 'r': return memcmp(&buffer[i], "struct", ((size_t)k - (size_t)i)) == 0 && ((size_t)k - (size_t)i) == strlen("struct");
 			default: return false;
 			}
 			break;
