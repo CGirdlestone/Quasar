@@ -33,7 +33,7 @@ static void drawTextInputMode(Console* console, Editor* editor, Line* line)
 	do {
 		drawLineNumber(console, editor, j);
 
-		for (int i = editor->frame_x; ; ) {
+		for (int i = 0; ; ) {
 			int k = i;
 			char c = line->buffer[i];
 			
@@ -75,7 +75,8 @@ static void drawTextInputMode(Console* console, Editor* editor, Line* line)
 			}
 
 			if (i < k && (isDigit || isKeyword || isString || isComment)) {
-				while (i < k) {
+				while (i < k){
+					if (i < editor->frame_x) { i++; continue; };
 					if (isDigit) {
 						putColourChar(console, line->buffer[i], (i - editor->frame_x) + editor->x_offset, j + editor->y_offset, console->number_colour);
 					}
@@ -95,11 +96,13 @@ static void drawTextInputMode(Console* console, Editor* editor, Line* line)
 			else {
 				if (i < k) {
 					while (i < k) {
+						if (i < editor->frame_x) { i++; continue; };
 						putChar(console, line->buffer[i], (i - editor->frame_x) + editor->x_offset, j + editor->y_offset);
 						i++;
 					}
 				}
 				else {
+					if (i < editor->frame_x) { i++; continue; };
 					putChar(console, line->buffer[i], (i - editor->frame_x) + editor->x_offset, j + editor->y_offset);
 					i++;
 				}
