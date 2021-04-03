@@ -251,9 +251,19 @@ static void textInputMode(Console* console, Editor* editor, Line* line, SDL_Even
 				break;
 			}
 			case SDLK_DELETE: 
-				backspace(editor, line, editor->x); 
-				editor->x = editor->x < 0 ? 0 : editor->x; 
-				break;
+				if (!editor->ctrl_key) {
+					backspace(editor, line, editor->x);
+					editor->x = editor->x < 0 ? 0 : editor->x;
+					break;
+				}
+				else {
+					int x = seekNextSpace(editor, line);
+
+					for (int i = 0; i < x - 1; i++) {
+						backspace(editor, line, editor->x);
+						editor->x = editor->x < 0 ? 0 : editor->x;
+					}
+				}
 			case SDLK_SPACE: 
 				addChar(editor, line, ' ', editor->x); 
 				editor->x++; 
@@ -336,21 +346,36 @@ void executeCommand(Editor* editor, Line* line)
 
 static int seekPreviousSpace(Editor* editor, Line* line)
 {
-	int x = 0;
-	while (true) {
-		if (line->num_chars == 0) {
-			return x;
-		}
+	int x = editor->x;
+	if (editor->x == 0) {
+		return 0;
+	}
 
-		if (x == line->num_chars) {
-			return line->num_chars;
-		}
+	if (line->buffer[x] == ' ') {
+		x--;
+	}
 
-		if (line->buffer[line->num_chars - x] == ' ') {
-			return x;
-		}
+	while (line->buffer[x] != ' ' && x != 0) {
+		x--;
+	}
+
+	return editor->x - x;
+}
+
+static int seekNextSpace(Editor* editor, Line* line)
+{
+	int x = editor->x;
+	if (editor->x == line->num_chars) {
+		return 0;
+	}
+
+	if (line->buffer[x] == ' ') {
 		x++;
 	}
 
-	return x;
+	while (line->buffer[x] != ' ' && x != line->num_chars) {
+		x++;
+	}
+
+	return x - editor->x;
 }

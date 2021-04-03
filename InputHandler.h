@@ -24,5 +24,6 @@ void resetCommand(Editor* editor);
 void addCharCommand(Editor* editor, char c);
 
 static int seekPreviousSpace(Editor* editor, Line* line);
+static int seekNextSpace(Editor* editor, Line* line);
 
 #endif
