@@ -31,7 +31,7 @@ void setLanguage(Editor* editor, const char* language)
 	else if (memcmp(language, "cpp", strlen("cpp")) == 0 || memcmp(language, "cxx", strlen("cxx")) == 0) {
 		editor->lang = L_CPP;
 	}
-	else if (memcmp(language, "rs", strlen("rust")) == 0) {
+	else if (memcmp(language, "rs", strlen("rs")) == 0) {
 		editor->lang = L_RUST;
 	}
 	else if (memcmp(language, "py", strlen("py")) == 0) {

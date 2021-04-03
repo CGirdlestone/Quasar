@@ -259,11 +259,12 @@ static void textInputMode(Console* console, Editor* editor, Line* line, SDL_Even
 				else {
 					int x = seekNextSpace(editor, line);
 
-					for (int i = 0; i < x - 1; i++) {
+					for (int i = 0; i < x; i++) {
 						backspace(editor, line, editor->x);
 						editor->x = editor->x < 0 ? 0 : editor->x;
 					}
 				}
+				break;
 			case SDLK_SPACE: 
 				addChar(editor, line, ' ', editor->x); 
 				editor->x++; 
